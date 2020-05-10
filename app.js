@@ -17,13 +17,20 @@ let cards =
 
 const deck = document.getElementById('deck');
 const dealerCard = document.getElementById('dealerCard');
+let hands = document.querySelectorAll('.hand');
 
-deck.addEventListener('click', () => {
-    let randCard = cards[Math.floor(Math.random() * cards.length)];
-    dealerCard.src = `cards/${randCard}.svg`;
-});
+function traverseDeck(){
+    if (typeof traverseDeck.counter == 'undefined' || traverseDeck.counter > 50) {
+        traverseDeck.counter = 27;
+    }
+    traverseDeck.counter ++;
+    //console.log(traverseDeck.counter - 28);
+    let currentCard = cards[traverseDeck.counter];
+    dealerCard.src = `cards/${currentCard}.svg`;
+}
+deck.addEventListener('click', traverseDeck);
 
-function deStringify() {
+function layoutHands() {
     let hand = document.querySelector('.hand');
     let attributes = hand.getAttribute('data-hand').split(';');
     let obj = {};
@@ -33,6 +40,40 @@ function deStringify() {
     });
 
     obj.cards = obj.cards.split(",");
+    // console.log(obj);
+    // console.log(obj.cards.join(","));
+}
+
+const layoutDeck = () => {
+    let i = 1, index = 0;
+    for (hand of hands) {
+        //console.log(hand);
+        let attributes = hand.getAttribute('data-hand').split(';');
+        //console.log(attributes);
+        let obj = {};
+        attributes.forEach(str => {
+            let keyValPair = str.split(":");
+            obj[keyValPair[0].trim()] = keyValPair[1].trim();
+        });
+
+        let cardsArray = [];
+        for(let j = 0; j < i; j++) {
+            if (j === i - 1) cardsArray.push(cards[index]);
+            else cardsArray.push("BLUE_BACK");
+            index++;
+        }
+        obj.cards = cardsArray.join("-");
+        //console.log(obj);
+        i++;
+        //console.log(cardsArray);
+        //console.log(obj);
+
+        let outStr = JSON.stringify(obj).replace(/[{}]/g, '').split(",").join(";").replace(/"/g,'').replace(/-/g,",");
+        hand.setAttribute('data-hand',outStr);
+
+        //console.log(obj);
+        //console.log(JSON.stringify(obj));
+    }
 }
 
 //Fisher-Yates shuffle algorithm
@@ -47,12 +88,15 @@ function shuffle(array) {
       [array[i], array[j]] = [array[j], array[i]];
     }
 
+    //console.log(array);
     return array;
   }
 
 window.onload = () => {
     cards = shuffle(cards);
+    layoutDeck();
 };
+
 
 
 

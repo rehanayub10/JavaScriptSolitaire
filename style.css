@@ -11,3 +11,14 @@ body {
 #dealerCard {
     margin-left: 20px;
 }
+
+.collections {
+    display: inline-block;
+    margin-left: 600px;
+}
+
+.playingDeck {
+    margin-top: 80px;
+    margin-left: 80px;
+}
+
