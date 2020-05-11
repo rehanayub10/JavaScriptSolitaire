@@ -80,7 +80,10 @@ function shuffle(array) {
 
 const dragEnd = e => {
     let source = e.target.src.split("/").slice(-1).pop().split(".")[0];
+    //console.log(source);
+    //console.log(loc);
     let destination = loc.getAttribute('data-hand').split(":").slice(-1).pop().split(",");
+    //console.log(destination.pop());
     destination.push(source);
     let index = Array.from(hands).indexOf(loc);
     //console.log(hands[index].getAttribute('data-hand'));
@@ -93,20 +96,29 @@ const dragEnd = e => {
     //hands[index].children.append(`<img src="cards/${source}.svg" alt="" class="card"></img>`);
     let poi = hands[index].children;
     let newCard = document.createElement('img');
-    newCard.src = `http://127.0.0.1:5500cards/${source}.svg`;
     newCard.className = 'card';
-    console.log(poi);
-    let arr = Array.from(poi);
-    console.log(arr);
-    //let newKey = Object.keys(poi).length;
-    //console.log(newKey);
-    arr.push(newCard);
-    console.log(arr);
+    newCard.src = `http://127.0.0.1:5500/cards/${source}.svg`;
+    hands[index].appendChild(newCard);
+    console.log(hands[index]);
     playingDeck.innerHTML = "";
-    //console.log(playingDeck.innerHTML);
-    for(hand of hands) {
+    for (hand of hands) {
         playingDeck.innerHTML += hand.outerHTML;
     }
+    //console.log(poi);
+    // let arr = Array.from(poi);
+    // //console.log(arr);
+    // //let newKey = Object.keys(poi).length;
+    // //console.log(newKey);
+    // arr.push(newCard);
+    // let outStr = '';
+    // for(item of arr) {
+    //     outStr += item.outerHTML;
+    // }
+    // console.log(outStr);
+    //console.log(playingDeck.innerHTML);
+    //playingDeck.innerHTML = "";
+    //console.log(playingDeck.innerHTML);
+    //playingDeck.innerHTML.replace(destination.pop(),destination.pop() + "," + source);
     //console.log(typeof playingDeck.innerHTML);
     //console.log(playingDeck.innerHTML);
 } //returns source card
