@@ -15,9 +15,15 @@ let cards =
      'AC','AD','AS','AH'
     ]
 
+let loc; 
+
 const deck = document.getElementById('deck');
 const dealerCard = document.getElementById('dealerCard');
 let hands = document.querySelectorAll('.hand');
+let cardsList = document.querySelectorAll('.card');
+const playingDeck = document.querySelector('.playingDeck');
+//let hands = playingDeck.childNodes;
+//console.log(hands); 
 
 function traverseDeck(){
     if (typeof traverseDeck.counter == 'undefined' || traverseDeck.counter > 50) {
@@ -27,27 +33,13 @@ function traverseDeck(){
     //console.log(traverseDeck.counter - 28);
     let currentCard = cards[traverseDeck.counter];
     dealerCard.src = `cards/${currentCard}.svg`;
-}
+} //static counter
+
 deck.addEventListener('click', traverseDeck);
-
-function layoutHands() {
-    let hand = document.querySelector('.hand');
-    let attributes = hand.getAttribute('data-hand').split(';');
-    let obj = {};
-    attributes.forEach(str => {
-        let keyValPair = str.split(":");
-        obj[keyValPair[0].trim()] = keyValPair[1].trim();
-    });
-
-    obj.cards = obj.cards.split(",");
-    // console.log(obj);
-    // console.log(obj.cards.join(","));
-}
 
 const layoutDeck = () => {
     let i = 1, index = 0;
     for (hand of hands) {
-        //console.log(hand);
         let attributes = hand.getAttribute('data-hand').split(';');
         //console.log(attributes);
         let obj = {};
@@ -63,16 +55,10 @@ const layoutDeck = () => {
             index++;
         }
         obj.cards = cardsArray.join("-");
-        //console.log(obj);
         i++;
-        //console.log(cardsArray);
-        //console.log(obj);
 
         let outStr = JSON.stringify(obj).replace(/[{}]/g, '').split(",").join(";").replace(/"/g,'').replace(/-/g,",");
         hand.setAttribute('data-hand',outStr);
-
-        //console.log(obj);
-        //console.log(JSON.stringify(obj));
     }
 }
 
@@ -91,6 +77,56 @@ function shuffle(array) {
     //console.log(array);
     return array;
   }
+
+const dragEnd = e => {
+    let source = e.target.src.split("/").slice(-1).pop().split(".")[0];
+    let destination = loc.getAttribute('data-hand').split(":").slice(-1).pop().split(",");
+    destination.push(source);
+    let index = Array.from(hands).indexOf(loc);
+    //console.log(hands[index].getAttribute('data-hand'));
+    hands[index].setAttribute('data-hand', `flow:vertical;spacing:0.2;cards:${destination.join(",")}`);
+    //hands[index].appendChild(`<img src="cards/${source}.svg" alt="" class="card"></img>`);
+    //console.log(typeof hands);
+    //console.log(Array.from(hands));
+    //console.log(hands[index].getAttribute('data-hand'));
+    //layoutDeck();
+    //hands[index].children.append(`<img src="cards/${source}.svg" alt="" class="card"></img>`);
+    let poi = hands[index].children;
+    let newCard = document.createElement('img');
+    newCard.src = `http://127.0.0.1:5500cards/${source}.svg`;
+    newCard.className = 'card';
+    console.log(poi);
+    let arr = Array.from(poi);
+    console.log(arr);
+    //let newKey = Object.keys(poi).length;
+    //console.log(newKey);
+    arr.push(newCard);
+    console.log(arr);
+    playingDeck.innerHTML = "";
+    //console.log(playingDeck.innerHTML);
+    for(hand of hands) {
+        playingDeck.innerHTML += hand.outerHTML;
+    }
+    //console.log(typeof playingDeck.innerHTML);
+    //console.log(playingDeck.innerHTML);
+} //returns source card
+
+const dragEnter = (e) => {
+    if (e.target.classList.contains("card")) {
+        loc = e.target.parentElement;
+    }
+}
+
+const drop = e => {
+    e.preventDefault();
+    console.log(e.target);
+}
+//playingDeck.addEventListener('dragstart', dragStart);
+playingDeck.addEventListener('dragend', dragEnd);
+//playingDeck.addEventListener('dragover', dragOver);
+playingDeck.addEventListener('dragenter', dragEnter);
+//playingDeck.addEventListener('dragleave', dragLeave);
+playingDeck.addEventListener('drop', drop);
 
 window.onload = () => {
     cards = shuffle(cards);
