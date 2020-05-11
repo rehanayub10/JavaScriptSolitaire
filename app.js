@@ -79,6 +79,7 @@ function shuffle(array) {
   }
 
 const dragEnd = e => {
+    console.log(hands);
     let source = e.target.src.split("/").slice(-1).pop().split(".")[0];
     //console.log(source);
     //console.log(loc);
@@ -87,7 +88,7 @@ const dragEnd = e => {
     destination.push(source);
     let index = Array.from(hands).indexOf(loc);
     //console.log(hands[index].getAttribute('data-hand'));
-    hands[index].setAttribute('data-hand', `flow:vertical;spacing:0.2;cards:${destination.join(",")}`);
+    //hands[index].setAttribute('data-hand', `flow:vertical;spacing:0.2;cards:${destination.join(",")}`);
     //hands[index].appendChild(`<img src="cards/${source}.svg" alt="" class="card"></img>`);
     //console.log(typeof hands);
     //console.log(Array.from(hands));
@@ -102,8 +103,12 @@ const dragEnd = e => {
     console.log(hands[index]);
     playingDeck.innerHTML = "";
     for (hand of hands) {
-        playingDeck.innerHTML += hand.outerHTML;
+        playingDeck.innerHTML += hand.outerHTML + "&";
     }
+    //console.log(playingDeck.outerHTML);
+    hands = playingDeck.innerHTML.split("&amp;");
+    playingDeck.innerHTML = playingDeck.innerHTML.replace(/&amp;/g,'');
+    console.log(hands);
     //console.log(poi);
     // let arr = Array.from(poi);
     // //console.log(arr);
