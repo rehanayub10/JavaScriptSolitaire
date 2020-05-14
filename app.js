@@ -79,14 +79,34 @@ function shuffle(array) {
   }
 
 const dragEnd = e => {
-    console.log(hands);
+    //console.log(hands);
     let source = e.target.src.split("/").slice(-1).pop().split(".")[0];
     //console.log(source);
     //console.log(loc);
     let destination = loc.getAttribute('data-hand').split(":").slice(-1).pop().split(",");
     //console.log(destination.pop());
     destination.push(source);
-    let index = Array.from(hands).indexOf(loc);
+    // console.log(loc);
+    // console.log(hands);
+    if (!Array.isArray(hands)) {
+        index = Array.from(hands).indexOf(loc);
+        let newCard = document.createElement('img');
+        newCard.className = 'card';
+        newCard.src = `http://127.0.0.1:5500/cards/${source}.svg`;
+        hands[index].appendChild(newCard);
+        console.log(hands[index]);
+    } else {
+        for (str of hands) {
+            if (str.includes(loc)) index = hands.indexOf(str);
+            //console.log(hands[index]);
+            let temp = hands[index].split("</");
+            // hands[index] = hands[index].split("</");
+            temp[0] += `<img class=\"card\" src=\"http://127.0.0.1:5500/cards/${source}.svg\></`;
+            hands[index] = temp.join('');
+        }
+    }
+    //let index = Array.isArray(hands) ? hands.indexOf(loc) : Array.from(hands).indexOf(loc);
+    //console.log(index);
     //console.log(hands[index].getAttribute('data-hand'));
     //hands[index].setAttribute('data-hand', `flow:vertical;spacing:0.2;cards:${destination.join(",")}`);
     //hands[index].appendChild(`<img src="cards/${source}.svg" alt="" class="card"></img>`);
@@ -95,20 +115,31 @@ const dragEnd = e => {
     //console.log(hands[index].getAttribute('data-hand'));
     //layoutDeck();
     //hands[index].children.append(`<img src="cards/${source}.svg" alt="" class="card"></img>`);
-    let poi = hands[index].children;
-    let newCard = document.createElement('img');
-    newCard.className = 'card';
-    newCard.src = `http://127.0.0.1:5500/cards/${source}.svg`;
-    hands[index].appendChild(newCard);
-    console.log(hands[index]);
+    //let poi = hands[index].children;
+    // let newCard = document.createElement('img');
+    // newCard.className = 'card';
+    // newCard.src = `http://127.0.0.1:5500/cards/${source}.svg`;
+    // hands[index].appendChild(newCard);
+    //console.log(hands[index]);
     playingDeck.innerHTML = "";
     for (hand of hands) {
-        playingDeck.innerHTML += hand.outerHTML + "&";
+        //console.log(typeof hand);
+        if(typeof hand === 'string' || hand instanceof String) {
+            playingDeck.innerHTML += hand;
+            //console.log(playingDeck.innerHTML);
+        } else {
+            playingDeck.innerHTML += hand.outerHTML + "&";
+            //console.log(playingDeck.innerHTML);
+            hands = playingDeck.innerHTML.split("&amp;");
+            playingDeck.innerHTML = playingDeck.innerHTML.replace(/&amp;/g,'');
+        }
+        
     }
-    //console.log(playingDeck.outerHTML);
-    hands = playingDeck.innerHTML.split("&amp;");
-    playingDeck.innerHTML = playingDeck.innerHTML.replace(/&amp;/g,'');
-    console.log(hands);
+    //console.log(playingDeck.innerHTML);
+    
+    //console.log(hands);
+    
+    //console.log(hands);
     //console.log(poi);
     // let arr = Array.from(poi);
     // //console.log(arr);
@@ -131,19 +162,19 @@ const dragEnd = e => {
 const dragEnter = (e) => {
     if (e.target.classList.contains("card")) {
         loc = e.target.parentElement;
+        //console.log(loc);
     }
 }
 
-const drop = e => {
-    e.preventDefault();
-    console.log(e.target);
-}
 //playingDeck.addEventListener('dragstart', dragStart);
 playingDeck.addEventListener('dragend', dragEnd);
 //playingDeck.addEventListener('dragover', dragOver);
 playingDeck.addEventListener('dragenter', dragEnter);
 //playingDeck.addEventListener('dragleave', dragLeave);
-playingDeck.addEventListener('drop', drop);
+//playingDeck.addEventListener('drop', drop);
+
+dealerCard.addEventListener('dragenter', dragEnter);
+dealerCard.addEventListener('dragend', dragEnd);
 
 window.onload = () => {
     cards = shuffle(cards);
