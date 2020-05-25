@@ -19,7 +19,7 @@ let loc;
 
 const deck = document.getElementById('deck');
 const dealerCard = document.getElementById('dealerCard');
-let hands = document.querySelectorAll('.hand');
+//let hands = document.querySelectorAll('.hand');
 let cardsList = document.querySelectorAll('.card');
 const playingDeck = document.querySelector('.playingDeck');
 
@@ -35,29 +35,7 @@ function traverseDeck(){
 
 deck.addEventListener('click', traverseDeck);
 
-const layDeck = () => {
-    let i = 1, index = 0;
-    for (hand of hands) {
-        let attributes = hand.getAttribute('data-hand').split(';');
-        let obj = {};
-        attributes.forEach(str => {
-            let keyValPair = str.split(":");
-            obj[keyValPair[0].trim()] = keyValPair[1].trim();
-        });
 
-        let cardsArray = [];
-        for(let j = 0; j < i; j++) {
-            if (j === i - 1) cardsArray.push(cards[index]);
-            else cardsArray.push("BLUE_BACK");
-            index++;
-        }
-        obj.cards = cardsArray.join("-");
-        i++;
-
-        let outStr = JSON.stringify(obj).replace(/[{}]/g, '').split(",").join(";").replace(/"/g,'').replace(/-/g,",");
-        hand.setAttribute('data-hand',outStr);
-    }
-}
 
 const layoutDeck = () => {
     let index = 0;
