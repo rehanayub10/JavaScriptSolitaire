@@ -59,23 +59,37 @@ const layoutDeck = () => {
 const dragEnd = e => {
     let source = e.target.src.split("/").slice(-1).pop().split(".")[0];
     let destination = loc.getAttribute('data-hand').split(":").slice(-1).pop().split(",");
-    let index;
+
+    let index1;
     for(let i = 0; i < hands.length; i++) {
-        if (arraysMatch(hands[i], destination)) {
-            index = i;
+        for (card of hands[i]) {
+            if (card == source) {
+                hands[i].pop();
+                index1 = i;
+            }
         }
     }
-    //console.log(destination);
-    //console.log(index);
-    //console.log(playingDeck.childNodes);
-    destination.push(source);
-    //console.log(destination);
+    //console.log(playingDeck.childNodes[index1].childNodes);
+    let parent = playingDeck.childNodes[index1];
+    for (card of parent.childNodes) {
+        if (card.src === `http://127.0.0.1:5500/cards/${source}.svg`) {
+            parent.removeChild(card);
+        }
+    }
+
+    let index2;
+    for(let i = 0; i < hands.length; i++) {
+        if (arraysMatch(hands[i], destination)) {
+            index2 = i;
+        }
+    }
+
+    hands[index2].push(source);
+    //console.log(hands[index2]);
     let newCard = document.createElement('img');
     newCard.className = 'card';
     newCard.src = `cards/${source}.svg`;
-    //playingDeck.childNodes[index].appendChild
-    // playingDeck.childNodes[index].setAttribute('data-hand', `flow: vertical; spacing: 0.2; cards:${destination.join(',')}`);
-    playingDeck.childNodes[index].appendChild(newCard);
+    playingDeck.childNodes[index2].appendChild(newCard);
 
 } //returns source card
 
