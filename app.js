@@ -19,11 +19,11 @@ let loc;
 
 const deck = document.getElementById('deck');
 const dealerCard = document.getElementById('dealerCard');
-//let hands = document.querySelectorAll('.hand');
+let hands = [];
 let cardsList = document.querySelectorAll('.card');
 const playingDeck = document.querySelector('.playingDeck');
 
-function traverseDeck(){
+const traverseDeck = () => {
     if (typeof traverseDeck.counter == 'undefined' || traverseDeck.counter > 50) {
         traverseDeck.counter = 27;
     }
@@ -34,8 +34,6 @@ function traverseDeck(){
 } //static counter
 
 deck.addEventListener('click', traverseDeck);
-
-
 
 const layoutDeck = () => {
     let index = 0;
@@ -50,14 +48,57 @@ const layoutDeck = () => {
             index++;
         }
 
-        hand.setAttribute('data-hand', `flow: vertical; spacing: 0.2; cards:${cardsArray.join(',')} `);
+        hands[i -1] = cardsArray;
+        hand.setAttribute('data-hand', `flow: vertical; spacing: 0.2; cards:${cardsArray.join(',')}`);
         playingDeck.appendChild(hand);
     }
+
+    //console.log(hands);
 }
 
+const dragEnd = e => {
+    let source = e.target.src.split("/").slice(-1).pop().split(".")[0];
+    let destination = loc.getAttribute('data-hand').split(":").slice(-1).pop().split(",");
+    let index;
+    for(let i = 0; i < hands.length; i++) {
+        if (arraysMatch(hands[i], destination)) {
+            index = i;
+        }
+    }
+    //console.log(destination);
+    //console.log(index);
+    //console.log(playingDeck.childNodes);
+    destination.push(source);
+    //console.log(destination);
+    let newCard = document.createElement('img');
+    newCard.className = 'card';
+    newCard.src = `cards/${source}.svg`;
+    //playingDeck.childNodes[index].appendChild
+    // playingDeck.childNodes[index].setAttribute('data-hand', `flow: vertical; spacing: 0.2; cards:${destination.join(',')}`);
+    playingDeck.childNodes[index].appendChild(newCard);
 
+} //returns source card
+
+const dragEnter = (e) => {
+    if (e.target.classList.contains("card")) {
+        loc = e.target.parentElement;
+        //console.log(loc);
+    }
+} //makes loc the target card
+
+//playingDeck.addEventListener('dragstart', dragStart);
+playingDeck.addEventListener('dragend', dragEnd);
+//playingDeck.addEventListener('dragover', dragOver);
+playingDeck.addEventListener('dragenter', dragEnter);
+//playingDeck.addEventListener('dragleave', dragLeave);
+//playingDeck.addEventListener('drop', drop);
+
+// dealerCard.addEventListener('dragenter', dragEnter);
+// dealerCard.addEventListener('dragend', dragEnd);
+
+//Helper Functions
 //Fisher-Yates shuffle algorithm
-function shuffle(array) {
+const shuffle = array => {
     for (let i = array.length - 1; i > 0; i--) {
       let j = Math.floor(Math.random() * (i + 1)); // random index from 0 to i
   
@@ -69,31 +110,11 @@ function shuffle(array) {
     }
 
     return array;
-  }
+}
 
-const dragEnd = e => {
-    
-    let source = e.target.src.split("/").slice(-1).pop().split(".")[0];
-    let destination = loc.getAttribute('data-hand').split(":").slice(-1).pop().split(",");
-    destination.push(source);
-} //returns source card
-
-const dragEnter = (e) => {
-    if (e.target.classList.contains("card")) {
-        loc = e.target.parentElement;
-        console.log(loc);
-    }
-} //makes loc the target card
-
-//playingDeck.addEventListener('dragstart', dragStart);
-playingDeck.addEventListener('dragend', dragEnd);
-//playingDeck.addEventListener('dragover', dragOver);
-playingDeck.addEventListener('dragenter', dragEnter);
-//playingDeck.addEventListener('dragleave', dragLeave);
-//playingDeck.addEventListener('drop', drop);
-
-dealerCard.addEventListener('dragenter', dragEnter);
-dealerCard.addEventListener('dragend', dragEnd);
+const arraysMatch = (a1, a2) => {
+    return JSON.stringify(a1)==JSON.stringify(a2);
+}
 
 window.onload = () => {
     cards = shuffle(cards);
