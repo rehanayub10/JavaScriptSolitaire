@@ -57,39 +57,85 @@ const layoutDeck = () => {
 }
 
 const dragEnd = e => {
+    //console.log(loc);
     let source = e.target.src.split("/").slice(-1).pop().split(".")[0];
     let destination = loc.getAttribute('data-hand').split(":").slice(-1).pop().split(",");
+    //console.log(destination);
 
     let index1;
+    let position = -1;
+    let done = false;
     for(let i = 0; i < hands.length; i++) {
         for (card of hands[i]) {
             if (card == source) {
-                hands[i].pop();
+                //hands[i].pop();
                 index1 = i;
+                //console.log(card);
+                done = true;
+                break;
             }
+
+            position++;
         }
+
+        if (done) break;
     }
+    
+    //console.log(index1);
     //console.log(playingDeck.childNodes[index1].childNodes);
     let parent = playingDeck.childNodes[index1];
+    //console.log(playingDeck.childNodes[index1].getAttribute('data-hand'));
+    let bool = false;
+    let revealCard = document.createElement('img');
+    revealCard.className = 'card';
+    revealCard.src = `cards/${cards[position]}.svg`;
     for (card of parent.childNodes) {
         if (card.src === `http://127.0.0.1:5500/cards/${source}.svg`) {
             parent.removeChild(card);
+            bool = true;
+            let handCards = parent.getAttribute('data-hand').split(';').pop().split(':').pop().split(',');
+            handCards.pop();
+            //handCards.pop();
+            handCards[handCards.length - 1] = cards[position];
+            hands[index1] = handCards.slice(0);
+            parent.setAttribute('data-hand', `flow: vertical; spacing: 0.2; cards:${handCards.join(',')}`);
         }
+
+        if(bool) {
+            parent.appendChild(revealCard);
+        }
+
     }
 
+    if (parent.childNodes.length > 1) {
+        if (bool) parent.removeChild(parent.childNodes[parent.childNodes.length - 2]);
+    }
+    
+
+    //console.log(destination);
     let index2;
     for(let i = 0; i < hands.length; i++) {
         if (arraysMatch(hands[i], destination)) {
             index2 = i;
+            //console.log(hands[index2]);
+            //console.log(index2);
         }
     }
-
-    hands[index2].push(source);
+    
+    
+    destination.push(source);
+    //console.log(destination);
+    hands[index2] = destination.slice(0); //cloning the array
     //console.log(hands[index2]);
+    //console.log(hands[index2]);
+    // console.log(index2);
+    // console.log(hands[index2]);
     let newCard = document.createElement('img');
     newCard.className = 'card';
     newCard.src = `cards/${source}.svg`;
-    playingDeck.childNodes[index2].appendChild(newCard);
+    let hand = playingDeck.childNodes[index2];
+    hand.appendChild(newCard);
+    hand.setAttribute('data-hand', `flow: vertical; spacing: 0.2; cards:${destination.join(',')}`);
 
 } //returns source card
 
@@ -128,6 +174,10 @@ const shuffle = array => {
 
 const arraysMatch = (a1, a2) => {
     return JSON.stringify(a1)==JSON.stringify(a2);
+}
+
+const checkMove = (source, destination) => {
+    
 }
 
 window.onload = () => {
